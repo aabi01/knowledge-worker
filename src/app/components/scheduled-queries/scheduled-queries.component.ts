@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Dialog } from '@angular/cdk/dialog';
 import { Query } from '../../core/models/query.interface';
+import { AddQueryDialogComponent } from '../add-query-dialog/add-query-dialog.component';
 
 @Component({
   selector: 'app-scheduled-queries',
@@ -10,6 +12,8 @@ import { Query } from '../../core/models/query.interface';
   styleUrls: ['./scheduled-queries.component.scss'],
 })
 export class ScheduledQueriesComponent {
+  constructor(private dialog: Dialog) {}
+
   queries: Query[] = [
     {
       id: '1',
@@ -37,8 +41,13 @@ export class ScheduledQueriesComponent {
   }
 
   onAddQuery(): void {
-    // To be implemented
-    console.log('Add query clicked');
+    const dialogRef = this.dialog.open<Query>(AddQueryDialogComponent);
+
+    dialogRef.closed.subscribe((result?: Query) => {
+      if (result) {
+        this.queries = [...this.queries, result];
+      }
+    });
   }
 
   onRemoveQuery(query: Query): void {
