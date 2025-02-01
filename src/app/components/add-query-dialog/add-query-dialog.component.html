@@ -3,15 +3,36 @@
 
   <form [formGroup]="queryForm" (ngSubmit)="onSubmit()">
     <div class="form-field">
-      <input 
-        type="text" 
-        formControlName="queryName" 
+      <label for="queryName">Query Name</label>
+      <input
+        id="queryName"
+        type="text"
+        formControlName="queryName"
         placeholder="Enter Query Name"
-        class="full-width">
+        class="full-width"
+        [class.invalid]="
+          queryForm.get('queryName')?.invalid &&
+          queryForm.get('queryName')?.touched
+        "
+      />
+      <div
+        class="error-message"
+        *ngIf="
+          queryForm.get('queryName')?.invalid &&
+          queryForm.get('queryName')?.touched
+        "
+      >
+        Query name is required
+      </div>
     </div>
 
     <div class="form-field">
-      <select formControlName="selectedInterval" class="full-width">
+      <label for="interval">Update Interval</label>
+      <select
+        id="interval"
+        formControlName="selectedInterval"
+        class="full-width"
+      >
         <option value="" disabled>Choose Interval</option>
         <option *ngFor="let interval of intervals" [value]="interval.value">
           {{ interval.label }}
@@ -20,10 +41,13 @@
     </div>
 
     <div class="form-field">
-      <select 
-        formControlName="selectedApi" 
+      <label for="api">API</label>
+      <select
+        id="api"
+        formControlName="selectedApi"
         (ngModelChange)="onApiSelect($event)"
-        class="full-width">
+        class="full-width"
+      >
         <option value="" disabled>Choose API</option>
         <option *ngFor="let api of apis" [ngValue]="api">
           {{ api.name }}
@@ -32,42 +56,62 @@
     </div>
 
     <ng-container *ngIf="selectedApi">
-      <div class="parameter-group" *ngFor="let param of selectedParameters; let i = index">
+      <div
+        class="parameter-group"
+        *ngFor="let param of selectedParameters; let i = index"
+      >
         <div class="form-field parameter-name">
-          <select formControlName="selectedParameters" class="full-width">
+          <label for="parameter-{{ i }}">Parameter {{ i + 1 }}</label>
+          <select
+            id="parameter-{{ i }}"
+            formControlName="selectedParameters"
+            class="full-width"
+          >
             <option value="" disabled>Choose Parameter</option>
-            <option *ngFor="let apiParam of selectedApi.parameters" [value]="apiParam.name">
+            <option
+              *ngFor="let apiParam of selectedApi.parameters"
+              [value]="apiParam.name"
+            >
               {{ apiParam.name }}
             </option>
           </select>
         </div>
         <div class="form-field parameter-value">
-          <input 
-            type="text" 
-            formControlName="selectedParameters" 
+          <label for="value-{{ i }}">Value</label>
+          <input
+            id="value-{{ i }}"
+            type="text"
+            formControlName="selectedParameters"
             placeholder="Enter Value"
-            class="full-width">
+            class="full-width"
+          />
         </div>
       </div>
 
       <div class="form-field">
-        <select 
-          formControlName="selectedAttributes" 
+        <label for="attributes">Response Attributes</label>
+        <select
+          id="attributes"
+          formControlName="selectedAttributes"
           multiple
-          class="full-width">
-          <option value="" disabled>Choose Response Attributes</option>
-          <option *ngFor="let attr of selectedApi.availableAttributes" [value]="attr">
+          class="full-width"
+          size="4"
+        >
+          <option
+            *ngFor="let attr of selectedApi.availableAttributes"
+            [value]="attr"
+          >
             {{ attr }}
           </option>
         </select>
       </div>
     </ng-container>
 
-    <div class="button-group">
-      <button type="button" (click)="onCancel()">Cancel</button>
-      <button 
-        type="submit" 
-        [disabled]="!queryForm.valid">
+    <div class="dialog-actions">
+      <button type="button" class="cancel-button" (click)="onCancel()">
+        Cancel
+      </button>
+      <button type="submit" class="save-button" [disabled]="!queryForm.valid">
         Save
       </button>
     </div>

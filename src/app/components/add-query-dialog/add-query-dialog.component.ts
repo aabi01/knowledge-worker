@@ -1,6 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { DialogRef } from '@angular/cdk/dialog';
 import { Query } from '../../core/models/query.interface';
 import { Api } from '../../core/models/api.interface';
@@ -55,9 +60,10 @@ export class AddQueryDialogComponent {
 
   constructor() {
     this.queryForm = this.fb.group({
-      queryName: [''],
+      queryName: ['', Validators.required],
       selectedInterval: [300000],
       selectedApi: [null],
+      selectedAttributes: [[]], // Initialize as empty array for multiple select
     });
 
     this.queryForm.get('selectedApi')?.valueChanges.subscribe((api) => {
@@ -71,6 +77,7 @@ export class AddQueryDialogComponent {
     this.selectedApi = api;
     this.selectedParameters = [];
     this.selectedAttributes = [];
+    this.queryForm.patchValue({ selectedAttributes: [] }); // Reset selected attributes when API changes
   }
 
   onCancel(): void {
