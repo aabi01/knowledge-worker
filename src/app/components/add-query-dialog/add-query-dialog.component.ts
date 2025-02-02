@@ -14,7 +14,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { ApiRepositoryService } from '../../core/services/api-repository.service';
-import { Observable, switchMap } from 'rxjs';
+import { QueryService } from '../../core/services/query.service';
+import { Observable } from 'rxjs';
 
 const QUERY_INTERVALS = [
   { value: 300000, label: '5 minutes' },
@@ -23,7 +24,8 @@ const QUERY_INTERVALS = [
   { value: 1800000, label: '30 minutes' },
   { value: 3600000, label: '1 hour' },
 ];
-const DEFAULT_QUERY_INTERVAL = 300000;
+
+const DEFAULT_QUERY_INTERVAL = QUERY_INTERVALS[0].value;
 
 @Component({
   selector: 'app-add-query-dialog',
@@ -42,6 +44,7 @@ const DEFAULT_QUERY_INTERVAL = 300000;
 export class AddQueryDialogComponent implements OnInit {
   private dialogRef = inject(DialogRef);
   private apiRepository = inject(ApiRepositoryService);
+  private queryService = inject(QueryService);
 
   readonly queryIntervals = QUERY_INTERVALS;
   readonly apis$: Observable<Api[]> = this.apiRepository.getApis();
@@ -51,7 +54,7 @@ export class AddQueryDialogComponent implements OnInit {
     selectedInterval: new FormControl(DEFAULT_QUERY_INTERVAL),
     selectedApi: new FormControl(null),
     selectedAttributes: new FormControl([], Validators.required),
-    parameters: new FormGroup({}), // Add a nested form group for parameters
+    parameters: new FormGroup({}),
   });
 
   selectedParameters: { name: string; value: string }[] = [];
@@ -59,28 +62,28 @@ export class AddQueryDialogComponent implements OnInit {
   selectedApi: Api | null = null;
 
   ngOnInit(): void {
-    this.queryForm.get('selectedApi')?.valueChanges.subscribe((api) => {
+    // Subscribe to selectedApi changes
+    this.queryForm.get('selectedApi')?.valueChanges.subscribe((api: Api) => {
       if (api) {
         this.onApiSelect(api);
       }
     });
+
+    // Subscribe to selectedAttributes changes
+    this.queryForm
+      .get('selectedAttributes')
+      ?.valueChanges.subscribe((attributes: string[]) => {
+        this.selectedAttributes = attributes;
+      });
   }
 
   onApiSelect(api: Api): void {
     this.selectedApi = api;
-    this.selectedParameters = [];
     this.selectedAttributes = [];
-    this.queryForm.patchValue({ selectedAttributes: [] });
+    this.selectedParameters = [];
 
-    // Get the parameters form group
-    const parametersGroup = this.queryForm.get('parameters') as FormGroup;
-
-    // Clear existing controls
-    Object.keys(parametersGroup.controls).forEach((key) => {
-      parametersGroup.removeControl(key);
-    });
-
-    // Add new controls for each parameter
+    // Reset the parameters form group
+    const parametersGroup = new FormGroup({});
     api.parameters.forEach((param) => {
       const defaultValue = param.defaultValue || '';
       const validators = param.required ? [Validators.required] : [];
@@ -89,6 +92,9 @@ export class AddQueryDialogComponent implements OnInit {
         new FormControl(defaultValue, validators)
       );
     });
+
+    this.queryForm.setControl('parameters', parametersGroup);
+    this.queryForm.get('selectedAttributes')?.setValue([]);
 
     // Subscribe to parameter changes
     parametersGroup.valueChanges.subscribe((values: { [key: string]: any }) => {
@@ -106,8 +112,7 @@ export class AddQueryDialogComponent implements OnInit {
   onSubmit(): void {
     if (this.queryForm.valid) {
       const formValue = this.queryForm.value;
-      const query: Query = {
-        id: Math.random().toString(36).substr(2, 9),
+      const queryData: Omit<Query, 'id'> = {
         name: formValue.queryName,
         interval: formValue.selectedInterval,
         apiId: formValue.selectedApi?.id,
@@ -115,7 +120,16 @@ export class AddQueryDialogComponent implements OnInit {
         selectedAttributes: this.selectedAttributes,
         isActive: true,
       };
-      this.dialogRef.close(query);
+
+      this.queryService.createQuery(queryData).subscribe({
+        next: (createdQuery) => {
+          this.dialogRef.close(createdQuery);
+        },
+        error: (error) => {
+          console.error('Error creating query:', error);
+          // TODO: Add proper error handling
+        },
+      });
     }
   }
 }
