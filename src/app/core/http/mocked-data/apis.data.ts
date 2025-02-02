@@ -1,4 +1,4 @@
-import { Api } from '../models/api.interface';
+import { Api } from '../../models/api.interface';
 
 export const MOCKED_APIS: Api[] = [
   {

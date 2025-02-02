@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, delay } from 'rxjs';
 import { Api } from '../models/api.interface';
-import { MOCKED_APIS } from '../mocked-data/apis.data';
+import { MOCKED_APIS } from './mocked-data/apis.data';
 
 @Injectable({
   providedIn: 'root',
