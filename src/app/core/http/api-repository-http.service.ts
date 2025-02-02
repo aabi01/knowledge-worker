@@ -41,6 +41,45 @@ export class ApiRepositoryHttpService {
         'publishDate',
       ],
     },
+    {
+      id: 'movies-api',
+      name: 'Movies API',
+      description: 'Query movies and their details',
+      parameters: [
+        {
+          name: 'title',
+          type: 'string',
+          description: 'Movie title',
+          required: false,
+        },
+        {
+          name: 'director',
+          type: 'string',
+          description: 'Movie director',
+          required: false,
+        },
+        {
+          name: 'genre',
+          type: 'string',
+          description: 'Movie genre',
+          required: true,
+        },
+        {
+          name: 'year',
+          type: 'number',
+          description: 'Release year',
+          required: false,
+        },
+      ],
+      availableAttributes: [
+        'title',
+        'director',
+        'genre',
+        'releaseDate',
+        'rating',
+        'duration',
+      ],
+    },
   ];
 
   /**
