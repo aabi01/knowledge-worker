@@ -14,7 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { ApiRepositoryService } from '../../core/services/api-repository.service';
-import { Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 
 const QUERY_INTERVALS = [
   { value: 300000, label: '5 minutes' },
@@ -52,6 +52,14 @@ export class AddQueryDialogComponent implements OnInit {
     selectedApi: new FormControl(null),
     selectedAttributes: new FormControl([], Validators.required), // Initialize as empty array for multiple select
   });
+
+  readonly selectedApiParameters$ = this.queryForm
+    .get('selectedApi')
+    ?.valueChanges.pipe(
+      switchMap((api) =>
+        api ? this.apiRepository.getApiParameters(api.id) : []
+      )
+    );
 
   selectedParameters: { name: string; value: string }[] = [];
   selectedAttributes: string[] = [];
