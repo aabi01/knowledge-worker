@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Dialog } from '@angular/cdk/dialog';
 import { Query } from '../../core/models/query.interface';
 import { AddQueryDialogComponent } from '../add-query-dialog/add-query-dialog.component';
+import { QueryService } from '../../core/services/query.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-scheduled-queries',
@@ -12,45 +14,53 @@ import { AddQueryDialogComponent } from '../add-query-dialog/add-query-dialog.co
   styleUrls: ['./scheduled-queries.component.scss'],
 })
 export class ScheduledQueriesComponent {
-  constructor(private dialog: Dialog) {}
+  readonly dialog = inject(Dialog);
+  readonly queryService = inject(QueryService);
 
-  queries: Query[] = [
-    {
-      id: '1',
-      name: 'Books from Author ABC available',
-      interval: 300000, // 5 minutes in milliseconds
-      apiId: 'books-api',
-      parameters: [],
-      selectedAttributes: [],
-      isActive: true,
-    },
-    {
-      id: '2',
-      name: 'Price for Books from Author XYZ',
-      interval: 600000, // 10 minutes in milliseconds
-      apiId: 'books-api',
-      parameters: [],
-      selectedAttributes: [],
-      isActive: true,
-    },
-  ];
+  queries$: Observable<Query[]> = this.queryService.getQueries();
 
-  formatInterval(milliseconds: number): string {
-    const minutes = milliseconds / (1000 * 60);
-    return `${minutes} min`;
-  }
-
-  onAddQuery(): void {
-    const dialogRef = this.dialog.open<Query>(AddQueryDialogComponent);
-
-    dialogRef.closed.subscribe((result?: Query) => {
+  onAddQuery() {
+    const dialogRef = this.dialog.open(AddQueryDialogComponent);
+    dialogRef.closed.subscribe((result) => {
       if (result) {
-        this.queries = [...this.queries, result];
+        this.refreshQueries();
       }
     });
   }
 
-  onRemoveQuery(query: Query): void {
-    this.queries = this.queries.filter((q) => q.id !== query.id);
+  onRemoveQuery(query: Query) {
+    this.queryService.deleteQuery(query.id).subscribe({
+      next: () => {
+        this.refreshQueries();
+      },
+      error: (error) => {
+        console.error('Error removing query:', error);
+        // TODO: Add proper error handling
+      },
+    });
+  }
+
+  private refreshQueries() {
+    this.queries$ = this.queryService.getQueries();
+  }
+
+  formatInterval(interval: number): string {
+    const minutes = interval / 60000; // Convert milliseconds to minutes
+    if (minutes < 60) {
+      return `${minutes} minutes`;
+    }
+    const hours = minutes / 60;
+    if (hours === 1) {
+      return '1 hour';
+    }
+    return `${hours} hours`;
+  }
+
+  formatParameters(parameters: Query['parameters']): string {
+    return parameters.map(({ name, value }) => `${name}: ${value}`).join(', ');
+  }
+
+  formatAttributes(attributes: string[]): string {
+    return attributes.join(', ');
   }
 }

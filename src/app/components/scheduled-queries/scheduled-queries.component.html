@@ -1,27 +1,36 @@
 <div class="scheduled-queries">
   <div class="table-header">
     <h2>Scheduled Queries</h2>
-    <button class="add-button" (click)="onAddQuery()">Add</button>
+    <button class="add-button" (click)="onAddQuery()">Add Query</button>
   </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Query Name</th>
-        <th>Interval</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let query of queries">
-        <td>{{ query.name }}</td>
-        <td>Every {{ formatInterval(query.interval) }}</td>
-        <td>
-          <button class="remove-button" (click)="onRemoveQuery(query)">
-            Remove
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <ng-container *ngIf="queries$ | async as queries">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Interval</th>
+          <th>Parameters</th>
+          <th>Selected Attributes</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let query of queries">
+          <td>{{ query.name }}</td>
+          <td>{{ formatInterval(query.interval) }}</td>
+          <td>{{ formatParameters(query.parameters) }}</td>
+          <td>{{ formatAttributes(query.selectedAttributes) }}</td>
+          <td>
+            <button class="remove-button" (click)="onRemoveQuery(query)">
+              Remove
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="queries.length === 0">
+          <td colspan="5" class="no-data">No queries available</td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-container>
 </div>
