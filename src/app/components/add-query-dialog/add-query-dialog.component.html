@@ -27,7 +27,7 @@
         <mat-select formControlName="selectedInterval">
           <mat-option value="" disabled>Choose Interval</mat-option>
           <mat-option
-            *ngFor="let interval of intervals"
+            *ngFor="let interval of queryIntervals"
             [value]="interval.value"
           >
             {{ interval.label }}
@@ -44,7 +44,7 @@
           (selectionChange)="onApiSelect($event.value)"
         >
           <mat-option value="" disabled>Choose API</mat-option>
-          <mat-option *ngFor="let api of apis" [value]="api">
+          <mat-option *ngFor="let api of apis$ | async" [value]="api">
             {{ api.name }}
           </mat-option>
         </mat-select>
@@ -98,7 +98,12 @@
     </ng-container>
 
     <div class="dialog-actions">
-      <button mat-stroked-button color="warn" type="button" (click)="onCancel()">
+      <button
+        mat-stroked-button
+        color="warn"
+        type="button"
+        (click)="onCancel()"
+      >
         Cancel
       </button>
       <button

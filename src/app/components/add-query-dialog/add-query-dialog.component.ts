@@ -1,10 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
-  FormBuilder,
   FormGroup,
   Validators,
+  FormControl,
 } from '@angular/forms';
 import { DialogRef } from '@angular/cdk/dialog';
 import { Query } from '../../core/models/query.interface';
@@ -13,6 +13,17 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { ApiRepositoryService } from '../../core/services/api-repository.service';
+import { Observable } from 'rxjs';
+
+const QUERY_INTERVALS = [
+  { value: 300000, label: '5 minutes' },
+  { value: 600000, label: '10 minutes' },
+  { value: 900000, label: '15 minutes' },
+  { value: 1800000, label: '30 minutes' },
+  { value: 3600000, label: '1 hour' },
+];
+const DEFAULT_QUERY_INTERVAL = 300000;
 
 @Component({
   selector: 'app-add-query-dialog',
@@ -28,55 +39,25 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './add-query-dialog.component.html',
   styleUrls: ['./add-query-dialog.component.scss'],
 })
-export class AddQueryDialogComponent {
+export class AddQueryDialogComponent implements OnInit {
   private dialogRef = inject(DialogRef);
-  private fb = inject(FormBuilder);
+  private apiRepository = inject(ApiRepositoryService);
 
-  queryForm: FormGroup;
+  readonly queryIntervals = QUERY_INTERVALS;
+  readonly apis$: Observable<Api[]> = this.apiRepository.getApis();
+
+  readonly queryForm: FormGroup = new FormGroup({
+    queryName: new FormControl('', Validators.required),
+    selectedInterval: new FormControl(DEFAULT_QUERY_INTERVAL),
+    selectedApi: new FormControl(null),
+    selectedAttributes: new FormControl([], Validators.required), // Initialize as empty array for multiple select
+  });
+
   selectedParameters: { name: string; value: string }[] = [];
   selectedAttributes: string[] = [];
   selectedApi: Api | null = null;
 
-  // Mock APIs for demonstration
-  apis: Api[] = [
-    {
-      id: 'books-api',
-      name: 'Books API',
-      description: 'Query books by various parameters',
-      parameters: [
-        {
-          name: 'author',
-          type: 'string',
-          description: 'Author name',
-          required: true,
-        },
-        {
-          name: 'genre',
-          type: 'string',
-          description: 'Book genre',
-          required: true,
-        },
-      ],
-      availableAttributes: ['title', 'author', 'price', 'availability'],
-    },
-  ];
-
-  intervals = [
-    { value: 300000, label: '5 minutes' },
-    { value: 600000, label: '10 minutes' },
-    { value: 900000, label: '15 minutes' },
-    { value: 1800000, label: '30 minutes' },
-    { value: 3600000, label: '1 hour' },
-  ];
-
-  constructor() {
-    this.queryForm = this.fb.group({
-      queryName: ['', Validators.required],
-      selectedInterval: [300000],
-      selectedApi: [null],
-      selectedAttributes: [[]], // Initialize as empty array for multiple select
-    });
-
+  ngOnInit(): void {
     this.queryForm.get('selectedApi')?.valueChanges.subscribe((api) => {
       if (api) {
         this.onApiSelect(api);
