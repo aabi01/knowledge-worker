@@ -37,6 +37,7 @@ export class ScheduledQueriesComponent {
         confirmLabel: 'Delete',
         cancelLabel: 'Keep',
       },
+      hasBackdrop: false, // We handle the backdrop in the component
     });
 
     dialogRef.closed

@@ -1,0 +1,14 @@
+<div class="confirm-dialog-overlay">
+  <div class="confirm-dialog">
+    <h2>{{ data.title }}</h2>
+    <p>{{ data.message }}</p>
+    <div class="actions">
+      <button class="cancel-button" (click)="onCancel()">
+        {{ data.cancelLabel || 'Cancel' }}
+      </button>
+      <button class="confirm-button" (click)="onConfirm()">
+        {{ data.confirmLabel || 'Confirm' }}
+      </button>
+    </div>
+  </div>
+</div>
