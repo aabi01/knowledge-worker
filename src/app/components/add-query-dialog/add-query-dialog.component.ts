@@ -50,16 +50,9 @@ export class AddQueryDialogComponent implements OnInit {
     queryName: new FormControl('', Validators.required),
     selectedInterval: new FormControl(DEFAULT_QUERY_INTERVAL),
     selectedApi: new FormControl(null),
-    selectedAttributes: new FormControl([], Validators.required), // Initialize as empty array for multiple select
+    selectedAttributes: new FormControl([], Validators.required),
+    parameters: new FormGroup({}), // Add a nested form group for parameters
   });
-
-  readonly selectedApiParameters$ = this.queryForm
-    .get('selectedApi')
-    ?.valueChanges.pipe(
-      switchMap((api) =>
-        api ? this.apiRepository.getApiParameters(api.id) : []
-      )
-    );
 
   selectedParameters: { name: string; value: string }[] = [];
   selectedAttributes: string[] = [];
@@ -77,7 +70,33 @@ export class AddQueryDialogComponent implements OnInit {
     this.selectedApi = api;
     this.selectedParameters = [];
     this.selectedAttributes = [];
-    this.queryForm.patchValue({ selectedAttributes: [] }); // Reset selected attributes when API changes
+    this.queryForm.patchValue({ selectedAttributes: [] });
+
+    // Get the parameters form group
+    const parametersGroup = this.queryForm.get('parameters') as FormGroup;
+
+    // Clear existing controls
+    Object.keys(parametersGroup.controls).forEach((key) => {
+      parametersGroup.removeControl(key);
+    });
+
+    // Add new controls for each parameter
+    api.parameters.forEach((param) => {
+      const defaultValue = param.defaultValue || '';
+      const validators = param.required ? [Validators.required] : [];
+      parametersGroup.addControl(
+        param.name,
+        new FormControl(defaultValue, validators)
+      );
+    });
+
+    // Subscribe to parameter changes
+    parametersGroup.valueChanges.subscribe((values: { [key: string]: any }) => {
+      this.selectedParameters = Object.entries(values).map(([name, value]) => ({
+        name,
+        value: value?.toString() ?? '',
+      }));
+    });
   }
 
   onCancel(): void {

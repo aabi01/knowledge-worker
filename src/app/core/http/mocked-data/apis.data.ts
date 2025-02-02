@@ -58,12 +58,6 @@ export const MOCKED_APIS: Api[] = [
         description: 'Movie genre',
         required: true,
       },
-      {
-        name: 'year',
-        type: 'number',
-        description: 'Release year',
-        required: false,
-      },
     ],
     availableAttributes: [
       'title',

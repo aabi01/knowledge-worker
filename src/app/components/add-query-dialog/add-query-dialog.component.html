@@ -52,32 +52,19 @@
     </div>
 
     <ng-container *ngIf="selectedApi">
-      <div
-        class="parameter-group"
-        *ngFor="let param of selectedParameters; let i = index"
-      >
-        <div class="form-field">
+      <div class="parameter-group" formGroupName="parameters">
+        <div class="form-field" *ngFor="let param of selectedApi.parameters">
           <mat-form-field appearance="outline">
-            <mat-label>Parameter {{ i + 1 }}</mat-label>
-            <mat-select formControlName="selectedParameters">
-              <mat-option value="" disabled>Choose Parameter</mat-option>
-              <mat-option
-                *ngFor="let apiParam of selectedApi.parameters"
-                [value]="apiParam.name"
-              >
-                {{ apiParam.name }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div class="form-field">
-          <mat-form-field appearance="outline">
-            <mat-label>Value</mat-label>
+            <mat-label>{{ param.name }}</mat-label>
             <input
               matInput
-              formControlName="selectedParameters"
-              placeholder="Enter Value"
+              [formControlName]="param.name"
+              [placeholder]="'Enter ' + param.name"
+              [type]="param.type === 'number' ? 'number' : 'text'"
             />
+            <mat-error *ngIf="queryForm.get('parameters')?.get(param.name)?.invalid && queryForm.get('parameters')?.get(param.name)?.touched">
+              {{ param.name }} is required
+            </mat-error>
           </mat-form-field>
         </div>
       </div>
