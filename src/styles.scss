@@ -1,1 +1,25 @@
 /* You can add global styles to this file, and also import other style files */
+
+html, body { 
+  height: 100%; 
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+// Material overrides
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-color: white;
+  padding: 0;
+}
+
+.mat-mdc-form-field {
+  --mdc-filled-text-field-container-color: white;
+}
+
+.mdc-text-field {
+  background-color: white !important;
+}
+
+.mat-mdc-select-panel {
+  background: white !important;
+}

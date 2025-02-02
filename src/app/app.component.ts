@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { ScheduledQueriesComponent } from './components/scheduled-queries/scheduled-queries.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  standalone: true,
+  imports: [ScheduledQueriesComponent],
+  template: '<app-scheduled-queries />',
 })
-export class AppComponent {
-  title = 'knowledge-worker';
-}
+export class AppComponent {}

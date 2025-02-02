@@ -1,0 +1,131 @@
+:host {
+  display: block;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0px 11px 15px -7px rgba(0, 0, 0, 0.2),
+    0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12);
+
+  ::ng-deep {
+    .mdc-button--raised.mat-accent {
+      background-color: #4caf50 !important;
+      color: white !important;
+
+      .mdc-button__label {
+        color: white !important;
+      }
+    }
+
+    .mdc-button--outlined.mat-warn {
+      border-color: #f44336 !important;
+      color: #f44336 !important;
+    }
+  }
+}
+
+.dialog-container {
+  padding: 24px;
+  width: 500px;
+  max-width: 100%;
+
+  h2 {
+    margin: 0 0 24px;
+    font-size: 20px;
+    font-weight: 500;
+  }
+}
+
+.form-field {
+  margin-bottom: 20px;
+  width: 100%;
+
+  mat-form-field {
+    width: 100%;
+    display: block;
+  }
+
+  mat-error {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+}
+
+.parameter-group {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+
+  .form-field {
+    flex: 1;
+    margin-bottom: 0;
+  }
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 32px;
+
+  button {
+    min-width: 80px;
+
+    &:disabled {
+      background-color: rgba(0, 0, 0, 0.12) !important;
+      color: rgba(0, 0, 0, 0.38) !important;
+      border-color: transparent !important;
+    }
+  }
+}
+
+::ng-deep {
+  .mat-mdc-dialog-container {
+    padding: 0 !important;
+    --mdc-dialog-container-color: white;
+  }
+
+  .mat-mdc-form-field {
+    display: block;
+
+    .mat-mdc-text-field-wrapper {
+      background-color: white;
+      padding: 0 12px;
+    }
+
+    .mat-mdc-form-field-flex {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  }
+
+  .mdc-text-field--outlined {
+    --mdc-filled-text-field-container-color: white !important;
+    background-color: white !important;
+  }
+
+  .mat-mdc-select-panel {
+    background: white !important;
+  }
+
+  .mat-mdc-option {
+    min-height: 36px;
+    padding: 0 16px;
+  }
+
+  .mat-mdc-form-field-subscript-wrapper {
+    padding: 0;
+  }
+
+  .mdc-text-field {
+    background-color: white !important;
+  }
+
+  .cdk-overlay-pane {
+    .mat-mdc-select-panel {
+      background: white !important;
+    }
+  }
+
+  .mat-mdc-select-value {
+    background: white;
+  }
+}
