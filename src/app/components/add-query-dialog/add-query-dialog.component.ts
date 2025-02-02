@@ -9,11 +9,22 @@ import {
 import { DialogRef } from '@angular/cdk/dialog';
 import { Query } from '../../core/models/query.interface';
 import { Api } from '../../core/models/api.interface';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-add-query-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatInputModule,
+    MatButtonModule,
+  ],
   templateUrl: './add-query-dialog.component.html',
   styleUrls: ['./add-query-dialog.component.scss'],
 })

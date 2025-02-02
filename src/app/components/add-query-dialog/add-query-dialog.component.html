@@ -3,56 +3,52 @@
 
   <form [formGroup]="queryForm" (ngSubmit)="onSubmit()">
     <div class="form-field">
-      <label for="queryName">Query Name</label>
-      <input
-        id="queryName"
-        type="text"
-        formControlName="queryName"
-        placeholder="Enter Query Name"
-        class="full-width"
-        [class.invalid]="
-          queryForm.get('queryName')?.invalid &&
-          queryForm.get('queryName')?.touched
-        "
-      />
-      <div
-        class="error-message"
-        *ngIf="
-          queryForm.get('queryName')?.invalid &&
-          queryForm.get('queryName')?.touched
-        "
-      >
-        Query name is required
-      </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Query Name</mat-label>
+        <input
+          matInput
+          formControlName="queryName"
+          placeholder="Enter Query Name"
+        />
+        <mat-error
+          *ngIf="
+            queryForm.get('queryName')?.invalid &&
+            queryForm.get('queryName')?.touched
+          "
+        >
+          Query name is required
+        </mat-error>
+      </mat-form-field>
     </div>
 
     <div class="form-field">
-      <label for="interval">Update Interval</label>
-      <select
-        id="interval"
-        formControlName="selectedInterval"
-        class="full-width"
-      >
-        <option value="" disabled>Choose Interval</option>
-        <option *ngFor="let interval of intervals" [value]="interval.value">
-          {{ interval.label }}
-        </option>
-      </select>
+      <mat-form-field appearance="outline">
+        <mat-label>Update Interval</mat-label>
+        <mat-select formControlName="selectedInterval">
+          <mat-option value="" disabled>Choose Interval</mat-option>
+          <mat-option
+            *ngFor="let interval of intervals"
+            [value]="interval.value"
+          >
+            {{ interval.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
 
     <div class="form-field">
-      <label for="api">API</label>
-      <select
-        id="api"
-        formControlName="selectedApi"
-        (ngModelChange)="onApiSelect($event)"
-        class="full-width"
-      >
-        <option value="" disabled>Choose API</option>
-        <option *ngFor="let api of apis" [ngValue]="api">
-          {{ api.name }}
-        </option>
-      </select>
+      <mat-form-field appearance="outline">
+        <mat-label>API</mat-label>
+        <mat-select
+          formControlName="selectedApi"
+          (selectionChange)="onApiSelect($event.value)"
+        >
+          <mat-option value="" disabled>Choose API</mat-option>
+          <mat-option *ngFor="let api of apis" [value]="api">
+            {{ api.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
 
     <ng-container *ngIf="selectedApi">
@@ -60,58 +56,57 @@
         class="parameter-group"
         *ngFor="let param of selectedParameters; let i = index"
       >
-        <div class="form-field parameter-name">
-          <label for="parameter-{{ i }}">Parameter {{ i + 1 }}</label>
-          <select
-            id="parameter-{{ i }}"
-            formControlName="selectedParameters"
-            class="full-width"
-          >
-            <option value="" disabled>Choose Parameter</option>
-            <option
-              *ngFor="let apiParam of selectedApi.parameters"
-              [value]="apiParam.name"
-            >
-              {{ apiParam.name }}
-            </option>
-          </select>
+        <div class="form-field">
+          <mat-form-field appearance="outline">
+            <mat-label>Parameter {{ i + 1 }}</mat-label>
+            <mat-select formControlName="selectedParameters">
+              <mat-option value="" disabled>Choose Parameter</mat-option>
+              <mat-option
+                *ngFor="let apiParam of selectedApi.parameters"
+                [value]="apiParam.name"
+              >
+                {{ apiParam.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
-        <div class="form-field parameter-value">
-          <label for="value-{{ i }}">Value</label>
-          <input
-            id="value-{{ i }}"
-            type="text"
-            formControlName="selectedParameters"
-            placeholder="Enter Value"
-            class="full-width"
-          />
+        <div class="form-field">
+          <mat-form-field appearance="outline">
+            <mat-label>Value</mat-label>
+            <input
+              matInput
+              formControlName="selectedParameters"
+              placeholder="Enter Value"
+            />
+          </mat-form-field>
         </div>
       </div>
 
       <div class="form-field">
-        <label for="attributes">Response Attributes</label>
-        <select
-          id="attributes"
-          formControlName="selectedAttributes"
-          multiple
-          class="full-width"
-          size="4"
-        >
-          <option
-            *ngFor="let attr of selectedApi.availableAttributes"
-            [value]="attr"
-          >
-            {{ attr }}
-          </option>
-        </select>
+        <mat-form-field appearance="outline">
+          <mat-label>Response Attributes</mat-label>
+          <mat-select formControlName="selectedAttributes" multiple>
+            <mat-option
+              *ngFor="let attr of selectedApi.availableAttributes"
+              [value]="attr"
+            >
+              {{ attr }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
     </ng-container>
 
     <div class="dialog-actions">
-      <button type="button" class="cancel-button" (click)="onCancel()">
+      <button mat-stroked-button color="warn" type="button" (click)="onCancel()">
         Cancel
       </button>
-      <button type="submit" class="save-button" [disabled]="!queryForm.valid">
+      <button
+        mat-raised-button
+        color="accent"
+        type="submit"
+        [disabled]="!queryForm.valid"
+      >
         Save
       </button>
     </div>

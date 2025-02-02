@@ -1,145 +1,131 @@
+:host {
+  display: block;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0px 11px 15px -7px rgba(0, 0, 0, 0.2),
+    0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12);
+
+  ::ng-deep {
+    .mdc-button--raised.mat-accent {
+      background-color: #4caf50 !important;
+      color: white !important;
+
+      .mdc-button__label {
+        color: white !important;
+      }
+    }
+
+    .mdc-button--outlined.mat-warn {
+      border-color: #f44336 !important;
+      color: #f44336 !important;
+    }
+  }
+}
+
 .dialog-container {
   padding: 24px;
-  width: 400px;
+  width: 500px;
   max-width: 100%;
-  background: white;
-  border-radius: 8px;
 
   h2 {
     margin: 0 0 24px;
-    color: #333;
     font-size: 20px;
     font-weight: 500;
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
   }
 }
 
 .form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  margin-bottom: 20px;
+  width: 100%;
 
-  label {
-    font-size: 14px;
-    color: #666;
-    
-    &::after {
-      content: ' *';
-      color: #dc3545;
-    }
+  mat-form-field {
+    width: 100%;
+    display: block;
   }
 
-  .error-message {
-    color: #dc3545;
+  mat-error {
     font-size: 12px;
     margin-top: 4px;
   }
 }
 
-.full-width {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  line-height: 1.5;
-  background: white;
-  transition: border-color 0.2s ease;
-
-  &.invalid {
-    border-color: #dc3545;
-    
-    &:focus {
-      border-color: #dc3545;
-      box-shadow: 0 0 0 1px rgba(220, 53, 69, 0.25);
-    }
-  }
-
-  &:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 1px rgba(0, 123, 255, 0.25);
-  }
-
-  &::placeholder {
-    color: #999;
-  }
-}
-
-select.full-width {
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 8px center;
-  background-size: 16px;
-  padding-right: 32px;
-
-  &[multiple] {
-    height: auto;
-    min-height: 120px;
-    background-image: none;
-    padding-right: 12px;
-
-    option {
-      padding: 8px;
-      margin: 2px 0;
-      
-      &:checked {
-        background: #e3f2fd;
-        color: #007bff;
-      }
-    }
-  }
-}
-
 .parameter-group {
   display: flex;
-  gap: 12px;
-  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
 
-  .parameter-name,
-  .parameter-value {
+  .form-field {
     flex: 1;
+    margin-bottom: 0;
   }
 }
 
 .dialog-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
+  gap: 8px;
+  margin-top: 32px;
 
   button {
-    padding: 8px 16px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-    transition: background-color 0.2s;
+    min-width: 80px;
 
-    &.cancel-button {
-      background: #f0f0f0;
-      color: #333;
+    &:disabled {
+      background-color: rgba(0, 0, 0, 0.12) !important;
+      color: rgba(0, 0, 0, 0.38) !important;
+      border-color: transparent !important;
+    }
+  }
+}
 
-      &:hover {
-        background: #e0e0e0;
-      }
+::ng-deep {
+  .mat-mdc-dialog-container {
+    padding: 0 !important;
+    --mdc-dialog-container-color: white;
+  }
+
+  .mat-mdc-form-field {
+    display: block;
+
+    .mat-mdc-text-field-wrapper {
+      background-color: white;
+      padding: 0 12px;
     }
 
-    &.save-button {
-      background: #007bff;
-      color: white;
-
-      &:hover {
-        background: #0056b3;
-      }
+    .mat-mdc-form-field-flex {
+      padding-top: 0;
+      padding-bottom: 0;
     }
+  }
+
+  .mdc-text-field--outlined {
+    --mdc-filled-text-field-container-color: white !important;
+    background-color: white !important;
+  }
+
+  .mat-mdc-select-panel {
+    background: white !important;
+  }
+
+  .mat-mdc-option {
+    min-height: 36px;
+    padding: 0 16px;
+  }
+
+  .mat-mdc-form-field-subscript-wrapper {
+    padding: 0;
+  }
+
+  .mdc-text-field {
+    background-color: white !important;
+  }
+
+  .cdk-overlay-pane {
+    .mat-mdc-select-panel {
+      background: white !important;
+    }
+  }
+
+  .mat-mdc-select-value {
+    background: white;
   }
 }
