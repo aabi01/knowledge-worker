@@ -52,20 +52,26 @@
     </div>
 
     <ng-container *ngIf="selectedApi">
-      <div class="parameter-group" formGroupName="parameters">
-        <div class="form-field" *ngFor="let param of selectedApi.parameters">
-          <mat-form-field appearance="outline">
-            <mat-label>{{ param.name }}</mat-label>
-            <input
-              matInput
-              [formControlName]="param.name"
-              [placeholder]="'Enter ' + param.name"
-              [type]="param.type === 'number' ? 'number' : 'text'"
-            />
-            <mat-error *ngIf="queryForm.get('parameters')?.get(param.name)?.invalid && queryForm.get('parameters')?.get(param.name)?.touched">
-              {{ param.name }} is required
-            </mat-error>
-          </mat-form-field>
+      <div class="parameters-section" formGroupName="parameters">
+        <h3>Parameters</h3>
+        <div class="parameter-item" *ngFor="let param of selectedApi.parameters">
+          <div class="parameter-label">
+            {{ param.name }}
+            <span class="required-marker" *ngIf="param.required">*</span>
+          </div>
+          <div class="parameter-field">
+            <mat-form-field appearance="outline">
+              <input
+                matInput
+                [formControlName]="param.name"
+                [placeholder]="'Enter ' + param.name"
+                [type]="param.type === 'number' ? 'number' : 'text'"
+              />
+              <mat-error *ngIf="queryForm.get('parameters')?.get(param.name)?.invalid && queryForm.get('parameters')?.get(param.name)?.touched">
+                {{ param.name }} is required
+              </mat-error>
+            </mat-form-field>
+          </div>
         </div>
       </div>
 

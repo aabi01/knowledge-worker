@@ -24,7 +24,7 @@
 
 .dialog-container {
   padding: 24px;
-  width: 500px;
+  width: 700px;
   max-width: 100%;
 
   h2 {
@@ -57,6 +57,53 @@
   .form-field {
     flex: 1;
     margin-bottom: 0;
+  }
+}
+
+.parameters-section {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: rgba(0, 0, 0, 0.02);
+  border-radius: 4px;
+
+  h3 {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .parameter-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    gap: 16px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .parameter-label {
+      flex: 0 0 30%;
+      padding-top: 16px;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.87);
+
+      .required-marker {
+        color: #f44336;
+        margin-left: 2px;
+      }
+    }
+
+    .parameter-field {
+      flex: 0 0 70%;
+
+      mat-form-field {
+        width: 100%;
+        display: block;
+      }
+    }
   }
 }
 
