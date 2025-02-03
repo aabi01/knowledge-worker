@@ -32,19 +32,4 @@ export class ApiRepositoryService {
       })
     );
   }
-
-  /**
-   * Get parameters for a specific API
-   * @param apiId The ID of the API to get parameters for
-   * @returns Observable of API parameters or empty array if not found
-   */
-  getApiParameters(apiId: string): Observable<Api['parameters']> {
-    return this.getApiById(apiId).pipe(
-      map(api => api?.parameters || []),
-      catchError(error => {
-        console.error(`Error fetching parameters for API ${apiId}:`, error);
-        return of([]);
-      })
-    );
-  }
 }
