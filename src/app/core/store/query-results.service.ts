@@ -7,7 +7,7 @@ interface QueryResultsState {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class QueryResultsService {
   private readonly MAX_RESULTS_PER_QUERY = 100;
@@ -29,8 +29,9 @@ export class QueryResultsService {
 
     this.state.next({
       ...currentState,
-      [result.queryId]: limitedResults
+      [result.queryId]: limitedResults,
     });
+    console.log('state:', this.state.value);
   }
 
   /**
@@ -39,9 +40,7 @@ export class QueryResultsService {
    * @returns Observable of the latest result or undefined if none exists
    */
   getLatestResult(queryId: string): Observable<QueryResult | undefined> {
-    return this.state.pipe(
-      map(state => state[queryId]?.[0])
-    );
+    return this.state.pipe(map((state) => state[queryId]?.[0]));
   }
 
   /**
@@ -50,9 +49,7 @@ export class QueryResultsService {
    * @returns Observable of all results for the query
    */
   getQueryResults(queryId: string): Observable<QueryResult[]> {
-    return this.state.pipe(
-      map(state => state[queryId] || [])
-    );
+    return this.state.pipe(map((state) => state[queryId] || []));
   }
 
   /**
@@ -86,8 +83,6 @@ export class QueryResultsService {
    * @returns Observable of the count
    */
   getResultCount(queryId: string): Observable<number> {
-    return this.state.pipe(
-      map(state => state[queryId]?.length || 0)
-    );
+    return this.state.pipe(map((state) => state[queryId]?.length || 0));
   }
 }

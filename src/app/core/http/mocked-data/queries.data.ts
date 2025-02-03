@@ -5,7 +5,7 @@ export const MOCK_QUERIES: Query[] = [
     id: '1',
     name: 'Books from Yuval',
     apiId: 'books-api',
-    interval: 300000, // 5 minutes
+    interval: 60000, // 1 minute
     parameters: [{ name: 'author', value: 'Yuval' }],
     selectedAttributes: ['title', 'author', 'genre', 'price'],
     isActive: true,
@@ -15,7 +15,7 @@ export const MOCK_QUERIES: Query[] = [
     id: '2',
     name: 'History books',
     apiId: 'books-api',
-    interval: 600000, // 10 minutes
+    interval: 300000, // 5 minutes
     parameters: [{ name: 'genre', value: 'History' }],
     selectedAttributes: ['title', 'author', 'genre', 'price', 'publishDate'],
     isActive: true,
