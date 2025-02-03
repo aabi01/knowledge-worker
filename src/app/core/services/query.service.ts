@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { Query } from '../models/query.interface';
 import { QueryHttpService } from '../http/query-http.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root',
@@ -42,24 +43,11 @@ export class QueryService {
   createQuery(query: Omit<Query, 'id'>): Observable<Query> {
     const newQuery: Query = {
       ...query,
-      id: crypto.randomUUID(), // Generate a unique ID
+      id: uuidv4(), // Generate a unique ID using uuid package
       lastExecuted: undefined, // New queries haven't been executed yet
     };
 
     return this.http.create(newQuery);
-  }
-
-  /**
-   * Update an existing query
-   * @param id Query ID
-   * @param updates Partial query updates
-   * @returns Observable<Query>
-   */
-  updateQuery(
-    id: string,
-    updates: Partial<Omit<Query, 'id'>>
-  ): Observable<Query> {
-    return this.http.update(id, updates);
   }
 
   /**

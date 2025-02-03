@@ -1,59 +1,79 @@
-# KnowledgeWorker
+# Knowledge Worker
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.6.
+A powerful Angular-based application for managing and scheduling automated queries across multiple data sources. This application helps users create, monitor, and analyze scheduled queries with a modern, user-friendly interface.
 
-## Development server
+## Features
 
-To start a local development server, run:
+### Query Management
+
+- **Create Custom Queries**: Design queries with customizable parameters and attributes
+- **Schedule Execution**: Set intervals for automatic query execution (1 minute to 1 hour)
+- **Multiple Data Sources**: Support for various APIs including books and movies databases
+- **Parameter Configuration**: Flexible parameter system with required and optional fields
+- **Attribute Selection**: Choose specific attributes to include in query results
+
+### User Interface
+
+- **Modern Design**: Clean and intuitive Material Design interface
+- **Interactive Dialogs**: User-friendly forms for query creation and result viewing
+- **Dynamic Updates**: Real-time updates of query status and results
+
+## Technical Stack
+
+- **Framework**: Angular 19.0.6
+- **UI Components**: Angular Material
+- **State Management**: RxJS for reactive programming
+- **Testing**: Jest for unit testing
+- **Styling**: SCSS for advanced styling capabilities
+
+## Getting Started
+
+1. **Prerequisites**:
+
+   - Node.js (Latest LTS version)
+   - npm (comes with Node.js)
+
+2. **Installation**:
+
+   ```bash
+   # Clone the repository
+   git clone https://github.com/aabi01/knowledge-worker
+
+   # Install dependencies
+   npm install
+   ```
+
+3. **Development Server**:
+   ```bash
+   ng serve
+   ```
+   Navigate to `http://localhost:4200/`.
+
+### Testing
+
+Run unit tests:
 
 ```bash
-ng serve
+npm test
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Project Structure
 
-## Code scaffolding
+- `src/app/components/`: UI components
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+  - `add-query-dialog/`: Query creation dialog
+  - `scheduled-queries/`: Main query management dashboard
+  - `show-query-result-dialog/`: Query results viewer
+  - `confirm-action-dialog/`: Confirmation dialogs
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- `src/app/core/`:
+  - `models/`: TypeScript interfaces
+  - `services/`: Business logic and API communication
+    - `query.service`: Query management
+    - `query-scheduler.service`: Query scheduling
+    - `query-results.service`: Results handling
+    - `api-repository.service`: API management
+  - `http/`: HTTP services for external API communication
+    - `books.service`: Mocked Books API
+    - `movies.service`: Mocked Movies API
+    - `api-repository.service`: Mocked API Repository

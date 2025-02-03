@@ -43,45 +43,9 @@ export class QueryResultsService {
   }
 
   /**
-   * Get all results for a specific query
-   * @param queryId The ID of the query
-   * @returns Observable of all results for the query
-   */
-  getQueryResults(queryId: string): Observable<QueryResult[]> {
-    return this.state.pipe(map((state) => state[queryId] || []));
-  }
-
-  /**
-   * Get all results for all queries
-   * @returns Observable of all query results
-   */
-  getAllResults(): Observable<QueryResultsState> {
-    return this.state.asObservable();
-  }
-
-  /**
-   * Clear all results for a specific query
-   * @param queryId The ID of the query
-   */
-  clearQueryResults(queryId: string): void {
-    const currentState = this.state.value;
-    const { [queryId]: _, ...newState } = currentState;
-    this.state.next(newState);
-  }
-
-  /**
    * Clear all stored results
    */
   clearAllResults(): void {
     this.state.next({});
-  }
-
-  /**
-   * Get the number of stored results for a query
-   * @param queryId The ID of the query
-   * @returns Observable of the count
-   */
-  getResultCount(queryId: string): Observable<number> {
-    return this.state.pipe(map((state) => state[queryId]?.length || 0));
   }
 }
