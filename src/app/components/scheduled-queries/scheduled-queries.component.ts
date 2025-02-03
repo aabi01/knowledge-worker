@@ -11,6 +11,7 @@ import {
   EMPTY,
   takeUntil,
   firstValueFrom,
+  tap,
 } from 'rxjs';
 import { ConfirmActionDialogComponent } from '../confirm-action-dialog/confirm-action-dialog.component';
 import { QuerySchedulerService } from '../../core/services/query-scheduler.service';
@@ -85,17 +86,10 @@ export class ScheduledQueriesComponent implements OnInit, OnDestroy {
             return this.queryService.deleteQuery(query.id);
           }
           return EMPTY;
-        })
+        }),
+        tap(() => this.refreshQueries())
       )
-      .subscribe({
-        next: () => {
-          this.refreshQueries();
-        },
-        error: (error) => {
-          console.error('Error removing query:', error);
-          // TODO: Add proper error handling
-        },
-      });
+      .subscribe();
   }
 
   async onShowResults(query: Query) {
