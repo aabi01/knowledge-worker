@@ -1,13 +1,12 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import {
   BehaviorSubject,
-  Observable,
   Subject,
   Subscription,
   interval,
   startWith,
 } from 'rxjs';
-import { filter, map, switchMap, takeUntil } from 'rxjs/operators';
+import { filter, switchMap, takeUntil } from 'rxjs/operators';
 import { Query } from '../models/query.interface';
 import { QueryResult } from '../models/query-result.interface';
 import { QueryExecutionService } from './query-execution.service';
@@ -111,45 +110,5 @@ export class QuerySchedulerService implements OnDestroy {
       }
     });
     this.activeQueries.next([]);
-  }
-
-  /**
-   * Get all currently active queries
-   */
-  getActiveQueries(): Observable<Query[]> {
-    return this.activeQueries.pipe(
-      map((queries) =>
-        queries
-          .filter((q) => q.query.isActive)
-          .map((q) => ({
-            ...q.query,
-            lastExecuted: q.lastExecuted,
-          }))
-      )
-    );
-  }
-
-  /**
-   * Check if a query is currently active
-   * @param queryId The ID of the query to check
-   */
-  isQueryActive(queryId: string): Observable<boolean> {
-    return this.activeQueries.pipe(
-      map((queries) =>
-        queries.some((q) => q.query.id === queryId && q.query.isActive)
-      )
-    );
-  }
-
-  /**
-   * Get the last execution time for a query
-   * @param queryId The ID of the query
-   */
-  getLastExecutionTime(queryId: string): Observable<Date | undefined> {
-    return this.activeQueries.pipe(
-      map(
-        (queries) => queries.find((q) => q.query.id === queryId)?.lastExecuted
-      )
-    );
   }
 }

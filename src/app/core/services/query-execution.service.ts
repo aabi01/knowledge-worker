@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, catchError, forkJoin, map, of, switchMap } from 'rxjs';
+import { Observable, catchError, map, of, switchMap } from 'rxjs';
 import { Query } from '../models/query.interface';
 import { QueryResult } from '../models/query-result.interface';
 import { ApiRepositoryService } from './api-repository.service';
@@ -39,20 +39,6 @@ export class QueryExecutionService {
         );
       })
     );
-  }
-
-  /**
-   * Execute multiple queries in parallel
-   * @param queries The queries to execute
-   * @returns Observable of query results
-   */
-  executeQueries(queries: Query[]): Observable<QueryResult[]> {
-    if (!queries.length) {
-      return of([]);
-    }
-
-    const queryExecutions = queries.map((query) => this.executeQuery(query));
-    return forkJoin(queryExecutions);
   }
 
   /**
