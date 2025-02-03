@@ -4,7 +4,14 @@ import { Dialog } from '@angular/cdk/dialog';
 import { Query } from '../../core/models/query.interface';
 import { AddQueryDialogComponent } from '../add-query-dialog/add-query-dialog.component';
 import { QueryService } from '../../core/services/query.service';
-import { Observable, Subject, switchMap, EMPTY, takeUntil, tap } from 'rxjs';
+import {
+  Observable,
+  Subject,
+  switchMap,
+  EMPTY,
+  takeUntil,
+  firstValueFrom,
+} from 'rxjs';
 import { ConfirmActionDialogComponent } from '../confirm-action-dialog/confirm-action-dialog.component';
 import { QuerySchedulerService } from '../../core/services/query-scheduler.service';
 import { ShowQueryResultDialogComponent } from '../show-query-result-dialog/show-query-result-dialog.component';
@@ -91,36 +98,32 @@ export class ScheduledQueriesComponent implements OnInit, OnDestroy {
       });
   }
 
-  onShowResults(query: Query) {
+  async onShowResults(query: Query) {
     // Get the latest result for this query
-    this.queryResults
-      .getLatestResult(query.id)
-      .pipe(
-        tap((result) => {
-          if (!result) {
-            // Show message if no results yet
-            this.dialog.open(ShowQueryResultDialogComponent, {
-              data: {
-                query,
-                result: {
-                  queryId: query.id,
-                  timestamp: new Date(),
-                  data: [],
-                  error:
-                    'No results available yet. The query may still be executing.',
-                },
-              },
-            });
-            return;
-          }
+    const result = await firstValueFrom(
+      this.queryResults.getLatestResult(query.id)
+    );
+    if (!result) {
+      // Show message if no results yet
+      this.dialog.open(ShowQueryResultDialogComponent, {
+        data: {
+          query,
+          result: {
+            queryId: query.id,
+            timestamp: new Date(),
+            data: [],
+            error:
+              'No results available yet. The query may still be executing.',
+          },
+        },
+      });
+      return;
+    }
 
-          // Show results dialog
-          this.dialog.open(ShowQueryResultDialogComponent, {
-            data: { query, result },
-          });
-        })
-      )
-      .subscribe();
+    // Show results dialog
+    this.dialog.open(ShowQueryResultDialogComponent, {
+      data: { query, result },
+    });
   }
 
   private refreshQueries() {
