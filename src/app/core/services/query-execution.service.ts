@@ -26,21 +26,11 @@ export class QueryExecutionService {
    * @returns Observable of the query result
    */
   executeQuery(query: Query): Observable<QueryResult> {
+    console.log('Executing query:', query.name);
     return this.apiRepository.getApiById(query.apiId).pipe(
       switchMap((api) => {
         if (!api) {
           return this.handleError(query.id, 'API not found');
-        }
-
-        // Validate parameters
-        const hasAllRequired = api.parameters
-          .filter((param) => param.required)
-          .every((param) =>
-            query.parameters.some((p) => p.name === param.name)
-          );
-
-        if (!hasAllRequired) {
-          return this.handleError(query.id, 'Missing required parameters');
         }
 
         // Execute query against the appropriate service

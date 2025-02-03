@@ -31,7 +31,6 @@ export class QueryResultsService {
       ...currentState,
       [result.queryId]: limitedResults,
     });
-    console.log('state:', this.state.value);
   }
 
   /**
