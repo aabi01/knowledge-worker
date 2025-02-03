@@ -26,7 +26,6 @@ export class QueryExecutionService {
    * @returns Observable of the query result
    */
   executeQuery(query: Query): Observable<QueryResult> {
-    console.log('Executing query:', query.name);
     return this.apiRepository.getApiById(query.apiId).pipe(
       switchMap((api) => {
         if (!api) {
