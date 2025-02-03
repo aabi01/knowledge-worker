@@ -1,11 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Dialog } from '@angular/cdk/dialog';
 import { Query } from '../../core/models/query.interface';
 import { AddQueryDialogComponent } from '../add-query-dialog/add-query-dialog.component';
 import { QueryService } from '../../core/services/query.service';
-import { Observable, switchMap, EMPTY } from 'rxjs';
+import { Observable, Subject, switchMap, EMPTY, takeUntil } from 'rxjs';
 import { ConfirmActionDialogComponent } from '../confirm-action-dialog/confirm-action-dialog.component';
+import { QuerySchedulerService } from '../../core/services/query-scheduler.service';
 
 @Component({
   selector: 'app-scheduled-queries',
@@ -14,16 +15,41 @@ import { ConfirmActionDialogComponent } from '../confirm-action-dialog/confirm-a
   templateUrl: './scheduled-queries.component.html',
   styleUrls: ['./scheduled-queries.component.scss'],
 })
-export class ScheduledQueriesComponent {
+export class ScheduledQueriesComponent implements OnInit, OnDestroy {
   readonly dialog = inject(Dialog);
   readonly queryService = inject(QueryService);
+  readonly queryScheduler = inject(QuerySchedulerService);
 
   queries$: Observable<Query[]> = this.queryService.getQueries();
+  private destroy$ = new Subject<void>();
+
+  ngOnInit() {
+    // Schedule all available queries on component initialization
+    this.queries$.pipe(takeUntil(this.destroy$)).subscribe((queries) => {
+      // Start all active queries
+      queries.forEach((query) => {
+        if (query.isActive) {
+          this.queryScheduler.startQuery(query);
+        }
+      });
+    });
+  }
+
+  ngOnDestroy() {
+    // Stop all queries and cleanup
+    this.queryScheduler.stopAllQueries();
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   onAddQuery() {
-    const dialogRef = this.dialog.open(AddQueryDialogComponent);
+    const dialogRef = this.dialog.open<Query>(AddQueryDialogComponent);
     dialogRef.closed.subscribe((result) => {
       if (result) {
+        // Start the query if it's active
+        if (result.isActive) {
+          this.queryScheduler.startQuery(result);
+        }
         this.refreshQueries();
       }
     });
@@ -42,9 +68,14 @@ export class ScheduledQueriesComponent {
 
     dialogRef.closed
       .pipe(
-        switchMap((confirmed) =>
-          confirmed ? this.queryService.deleteQuery(query.id) : EMPTY
-        )
+        switchMap((confirmed) => {
+          if (confirmed) {
+            // Stop the query if it's running
+            this.queryScheduler.stopQuery(query.id);
+            return this.queryService.deleteQuery(query.id);
+          }
+          return EMPTY;
+        })
       )
       .subscribe({
         next: () => {
