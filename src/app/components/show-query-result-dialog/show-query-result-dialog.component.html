@@ -1,0 +1,39 @@
+<div class="query-result-dialog">
+  <div class="dialog-header">
+    <h2>Query Results: {{ data.query.name }}</h2>
+    <button class="close-button" (click)="onClose()">×</button>
+  </div>
+
+  <div class="dialog-content">
+    <div class="table-section">
+      <table *ngIf="!data.result.error">
+        <thead>
+          <tr>
+            <th *ngFor="let attr of data.query.selectedAttributes">
+              {{ attr }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of data.result.data">
+            <td *ngFor="let attr of data.query.selectedAttributes">
+              {{ item[attr] }}
+            </td>
+          </tr>
+          <tr *ngIf="data.result.data.length === 0">
+            <td
+              [colSpan]="data.query.selectedAttributes.length"
+              class="no-data"
+            >
+              No results found
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="data.result.error" class="error-message">
+        {{ data.result.error }}
+      </div>
+    </div>
+  </div>
+</div>

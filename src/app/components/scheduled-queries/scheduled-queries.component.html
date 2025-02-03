@@ -16,13 +16,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let query of queries">
+        <tr *ngFor="let query of queries" 
+            (click)="onShowResults(query)"
+            class="clickable">
           <td>{{ query.name }}</td>
           <td>{{ formatInterval(query.interval) }}</td>
           <td>{{ formatParameters(query.parameters) }}</td>
           <td>{{ formatAttributes(query.selectedAttributes) }}</td>
           <td>
-            <button class="remove-button" (click)="onRemoveQuery(query)">
+            <button class="remove-button" (click)="onRemoveQuery(query); $event.stopPropagation()">
               Remove
             </button>
           </td>

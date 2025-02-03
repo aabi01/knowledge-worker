@@ -4,9 +4,11 @@ import { Dialog } from '@angular/cdk/dialog';
 import { Query } from '../../core/models/query.interface';
 import { AddQueryDialogComponent } from '../add-query-dialog/add-query-dialog.component';
 import { QueryService } from '../../core/services/query.service';
-import { Observable, Subject, switchMap, EMPTY, takeUntil } from 'rxjs';
+import { Observable, Subject, switchMap, EMPTY, takeUntil, tap } from 'rxjs';
 import { ConfirmActionDialogComponent } from '../confirm-action-dialog/confirm-action-dialog.component';
 import { QuerySchedulerService } from '../../core/services/query-scheduler.service';
+import { ShowQueryResultDialogComponent } from '../show-query-result-dialog/show-query-result-dialog.component';
+import { QueryResultsService } from '../../core/store/query-results.service';
 
 @Component({
   selector: 'app-scheduled-queries',
@@ -19,6 +21,7 @@ export class ScheduledQueriesComponent implements OnInit, OnDestroy {
   readonly dialog = inject(Dialog);
   readonly queryService = inject(QueryService);
   readonly queryScheduler = inject(QuerySchedulerService);
+  readonly queryResults = inject(QueryResultsService);
 
   queries$: Observable<Query[]> = this.queryService.getQueries();
   private destroy$ = new Subject<void>();
@@ -86,6 +89,38 @@ export class ScheduledQueriesComponent implements OnInit, OnDestroy {
           // TODO: Add proper error handling
         },
       });
+  }
+
+  onShowResults(query: Query) {
+    // Get the latest result for this query
+    this.queryResults
+      .getLatestResult(query.id)
+      .pipe(
+        tap((result) => {
+          if (!result) {
+            // Show message if no results yet
+            this.dialog.open(ShowQueryResultDialogComponent, {
+              data: {
+                query,
+                result: {
+                  queryId: query.id,
+                  timestamp: new Date(),
+                  data: [],
+                  error:
+                    'No results available yet. The query may still be executing.',
+                },
+              },
+            });
+            return;
+          }
+
+          // Show results dialog
+          this.dialog.open(ShowQueryResultDialogComponent, {
+            data: { query, result },
+          });
+        })
+      )
+      .subscribe();
   }
 
   private refreshQueries() {
