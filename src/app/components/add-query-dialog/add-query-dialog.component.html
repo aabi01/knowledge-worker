@@ -27,7 +27,7 @@
         <mat-select formControlName="selectedInterval">
           <mat-option value="" disabled>Choose Interval</mat-option>
           <mat-option
-            *ngFor="let interval of intervals"
+            *ngFor="let interval of queryIntervals"
             [value]="interval.value"
           >
             {{ interval.label }}
@@ -44,7 +44,7 @@
           (selectionChange)="onApiSelect($event.value)"
         >
           <mat-option value="" disabled>Choose API</mat-option>
-          <mat-option *ngFor="let api of apis" [value]="api">
+          <mat-option *ngFor="let api of apis$ | async" [value]="api">
             {{ api.name }}
           </mat-option>
         </mat-select>
@@ -52,33 +52,26 @@
     </div>
 
     <ng-container *ngIf="selectedApi">
-      <div
-        class="parameter-group"
-        *ngFor="let param of selectedParameters; let i = index"
-      >
-        <div class="form-field">
-          <mat-form-field appearance="outline">
-            <mat-label>Parameter {{ i + 1 }}</mat-label>
-            <mat-select formControlName="selectedParameters">
-              <mat-option value="" disabled>Choose Parameter</mat-option>
-              <mat-option
-                *ngFor="let apiParam of selectedApi.parameters"
-                [value]="apiParam.name"
-              >
-                {{ apiParam.name }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div class="form-field">
-          <mat-form-field appearance="outline">
-            <mat-label>Value</mat-label>
-            <input
-              matInput
-              formControlName="selectedParameters"
-              placeholder="Enter Value"
-            />
-          </mat-form-field>
+      <div class="parameters-section" formGroupName="parameters">
+        <h3>Parameters</h3>
+        <div class="parameter-item" *ngFor="let param of selectedApi.parameters">
+          <div class="parameter-label">
+            {{ param.name }}
+            <span class="required-marker" *ngIf="param.required">*</span>
+          </div>
+          <div class="parameter-field">
+            <mat-form-field appearance="outline">
+              <input
+                matInput
+                [formControlName]="param.name"
+                [placeholder]="'Enter ' + param.name"
+                [type]="param.type === 'number' ? 'number' : 'text'"
+              />
+              <mat-error *ngIf="queryForm.get('parameters')?.get(param.name)?.invalid && queryForm.get('parameters')?.get(param.name)?.touched">
+                {{ param.name }} is required
+              </mat-error>
+            </mat-form-field>
+          </div>
         </div>
       </div>
 
@@ -98,7 +91,12 @@
     </ng-container>
 
     <div class="dialog-actions">
-      <button mat-stroked-button color="warn" type="button" (click)="onCancel()">
+      <button
+        mat-stroked-button
+        color="warn"
+        type="button"
+        (click)="onCancel()"
+      >
         Cancel
       </button>
       <button
