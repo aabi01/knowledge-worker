@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { BooksHttpService } from '../http/books-http.service';
 import { Book } from '../models/book.interface';
 
@@ -16,5 +16,32 @@ export class BooksService {
    */
   getAllBooks(): Observable<Book[]> {
     return this.http.getAll();
+  }
+
+  queryBooks(params: Record<string, string>): Observable<Book[]> {
+    return this.getAllBooks().pipe(
+      map((books) => {
+        return books.filter((book) => {
+          // Author filter
+          const authorMatch =
+            !params['author'] ||
+            book.author.toLowerCase().includes(params['author'].toLowerCase());
+
+          // Genre filter
+          const genreMatch =
+            !params['genre'] ||
+            book.genre.toLowerCase() === params['genre'].toLowerCase();
+
+          // Year filter (if book has publishDate)
+          const yearMatch =
+            !params['year'] ||
+            (book.publishDate &&
+              new Date(book.publishDate).getFullYear() ===
+                parseInt(params['year']));
+
+          return authorMatch && genreMatch && yearMatch;
+        });
+      })
+    );
   }
 }
