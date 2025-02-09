@@ -1,16 +1,25 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { QueryHttpService } from './query-http.service';
 import { MOCK_QUERIES } from './mocked-data/queries.data';
 import { Query } from '../models/query.interface';
+import { environment } from '../../../environments/environment';
 
 describe(QueryHttpService.name, () => {
   let service: QueryHttpService;
+  let httpMock: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       providers: [QueryHttpService],
     });
     service = TestBed.inject(QueryHttpService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
   });
 
   it('should be created', () => {
@@ -24,6 +33,10 @@ describe(QueryHttpService.name, () => {
         expect(queries.length).toBe(MOCK_QUERIES.length);
         done();
       });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/queries`);
+      expect(req.request.method).toBe('GET');
+      req.flush(MOCK_QUERIES);
     });
 
     it('should return queries with correct structure', (done) => {
@@ -43,6 +56,10 @@ describe(QueryHttpService.name, () => {
         });
         done();
       });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/queries`);
+      expect(req.request.method).toBe('GET');
+      req.flush(MOCK_QUERIES);
     });
   });
 
@@ -60,37 +77,45 @@ describe(QueryHttpService.name, () => {
 
       service.create(newQuery).subscribe((createdQuery) => {
         expect(createdQuery).toEqual(newQuery);
-
-        // Verify query was added to the list
-        service.getAll().subscribe((queries) => {
-          expect(queries).toContainEqual(newQuery);
-          expect(queries.length).toBe(MOCK_QUERIES.length + 1);
-          done();
-        });
+        done();
       });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/queries`);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual(newQuery);
+      req.flush(newQuery);
     });
   });
 
   describe('delete', () => {
-    it('should delete an existing query', (done) => {
-      const queryToDelete = MOCK_QUERIES[0];
-      const originalLength = MOCK_QUERIES.length;
+    it('should delete a query', (done) => {
+      const queryId = 'test-id';
 
-      service.delete(queryToDelete.id).subscribe(() => {
-        service.getAll().subscribe((queries) => {
-          expect(queries.length).toBe(originalLength - 1);
-          expect(
-            queries.find((q) => q.id === queryToDelete.id)
-          ).toBeUndefined();
-          done();
-        });
+      service.delete(queryId).subscribe(() => {
+        done();
       });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/queries/${queryId}`);
+      expect(req.request.method).toBe('DELETE');
+      req.flush(null);
     });
 
-    it('should throw error when deleting non-existent query', () => {
-      expect(() => service.delete('non-existent-id')).toThrow(
-        'Query with id non-existent-id not found'
-      );
+    it('should handle 404 when deleting non-existent query', (done) => {
+      const queryId = 'non-existent-id';
+
+      service.delete(queryId).subscribe({
+        error: (error) => {
+          expect(error.status).toBe(404);
+          done();
+        }
+      });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/queries/${queryId}`);
+      expect(req.request.method).toBe('DELETE');
+      req.flush('Query not found', { 
+        status: 404, 
+        statusText: 'Not Found'
+      });
     });
   });
 });

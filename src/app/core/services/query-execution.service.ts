@@ -37,7 +37,8 @@ export class QueryExecutionService {
           map((data) => this.processQueryResult(query, data)),
           catchError((error) => this.handleError(query.id, error.message))
         );
-      })
+      }),
+      catchError((error) => this.handleError(query.id, error.message))
     );
   }
 
@@ -57,14 +58,22 @@ export class QueryExecutionService {
       {} as Record<string, string>
     );
 
-    switch (apiId) {
-      case 'books-api':
-        return this.booksService.queryBooks(params);
-      case 'movies-api':
-        return this.moviesService.queryMovies(params);
-      default:
-        return of([]);
-    }
+    return this.apiRepository.getApiById(apiId).pipe(
+      switchMap((api) => {
+        if (!api) {
+          return of([]);
+        }
+
+        switch (api.name) {
+          case 'Books API':
+            return this.booksService.queryBooks(params);
+          case 'Movies API':
+            return this.moviesService.queryMovies(params);
+          default:
+            return of([]);
+        }
+      })
+    );
   }
 
   /**

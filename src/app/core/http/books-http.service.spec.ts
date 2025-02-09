@@ -1,16 +1,28 @@
 import { TestBed } from '@angular/core/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { BooksHttpService } from './books-http.service';
 import { BOOKS_DATA } from './mocked-data/books.data';
+import { environment } from '../../../environments/environment';
 import { Book } from '../models/book.interface';
 
 describe(BooksHttpService.name, () => {
   let service: BooksHttpService;
+  let httpMock: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       providers: [BooksHttpService],
     });
     service = TestBed.inject(BooksHttpService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
   });
 
   it('should be created', () => {
@@ -24,6 +36,10 @@ describe(BooksHttpService.name, () => {
         expect(books.length).toBe(BOOKS_DATA.length);
         done();
       });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/books`);
+      expect(req.request.method).toBe('GET');
+      req.flush(BOOKS_DATA);
     });
 
     it('should return books with correct structure', (done) => {
@@ -49,6 +65,10 @@ describe(BooksHttpService.name, () => {
         });
         done();
       });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/books`);
+      expect(req.request.method).toBe('GET');
+      req.flush(BOOKS_DATA);
     });
 
     it('should include specific known books', (done) => {
@@ -67,6 +87,10 @@ describe(BooksHttpService.name, () => {
         expect(foundBook).toEqual(expectedBook);
         done();
       });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/books`);
+      expect(req.request.method).toBe('GET');
+      req.flush(BOOKS_DATA);
     });
   });
 });

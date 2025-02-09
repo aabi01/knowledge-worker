@@ -1,16 +1,28 @@
 import { TestBed } from '@angular/core/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { MoviesHttpService } from './movies-http.service';
 import { MOVIES_DATA } from './mocked-data/movies.data';
+import { environment } from '../../../environments/environment';
 import { Movie } from '../models/movies.interface';
 
 describe(MoviesHttpService.name, () => {
   let service: MoviesHttpService;
+  let httpMock: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       providers: [MoviesHttpService],
     });
     service = TestBed.inject(MoviesHttpService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
   });
 
   it('should be created', () => {
@@ -24,6 +36,10 @@ describe(MoviesHttpService.name, () => {
         expect(movies.length).toBe(MOVIES_DATA.length);
         done();
       });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/movies`);
+      expect(req.request.method).toBe('GET');
+      req.flush(MOVIES_DATA);
     });
 
     it('should return movies with correct structure', (done) => {
@@ -42,6 +58,10 @@ describe(MoviesHttpService.name, () => {
         });
         done();
       });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/movies`);
+      expect(req.request.method).toBe('GET');
+      req.flush(MOVIES_DATA);
     });
 
     it('should include specific known movies', (done) => {
@@ -59,6 +79,10 @@ describe(MoviesHttpService.name, () => {
         expect(foundMovie).toEqual(expectedMovie);
         done();
       });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/movies`);
+      expect(req.request.method).toBe('GET');
+      req.flush(MOVIES_DATA);
     });
 
     it('should have valid release dates', (done) => {
@@ -71,6 +95,10 @@ describe(MoviesHttpService.name, () => {
         });
         done();
       });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/movies`);
+      expect(req.request.method).toBe('GET');
+      req.flush(MOVIES_DATA);
     });
 
     it('should have valid duration format', (done) => {
@@ -91,6 +119,10 @@ describe(MoviesHttpService.name, () => {
         });
         done();
       });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/movies`);
+      expect(req.request.method).toBe('GET');
+      req.flush(MOVIES_DATA);
     });
 
     it('should have ratings within valid range', (done) => {
@@ -102,6 +134,10 @@ describe(MoviesHttpService.name, () => {
         });
         done();
       });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/movies`);
+      expect(req.request.method).toBe('GET');
+      req.flush(MOVIES_DATA);
     });
   });
 });
