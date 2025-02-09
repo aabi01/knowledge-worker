@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { BOOKS_DATA } from './mocked-data/books.data';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Book } from '../models/book.interface';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BooksHttpService {
+  constructor(private http: HttpClient) {}
+
   /**
-   * Retrieves all books from the mock data
+   * Retrieves all books from the API
    * @returns Observable<Book[]> An observable of the books array
    */
   getAll(): Observable<Book[]> {
-    return of(BOOKS_DATA);
+    return this.http.get<Book[]>(`${environment.apiUrl}/books`);
   }
 }
