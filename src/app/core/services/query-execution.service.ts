@@ -37,7 +37,8 @@ export class QueryExecutionService {
           map((data) => this.processQueryResult(query, data)),
           catchError((error) => this.handleError(query.id, error.message))
         );
-      })
+      }),
+      catchError((error) => this.handleError(query.id, error.message))
     );
   }
 

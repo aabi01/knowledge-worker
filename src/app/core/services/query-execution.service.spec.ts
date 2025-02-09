@@ -24,16 +24,16 @@ describe(QueryExecutionService.name, () => {
     price: 29.99,
     availability: true,
     rating: 4.5,
-    publishDate: '2025-01-01',
+    publishDate: '2025-01-01'
   };
 
   const mockMovie: Movie = {
     title: 'Test Movie',
     director: 'Test Director',
     genre: 'Test Genre',
-    releaseDate: '2025-01-01',
+    releaseDate: '2025',
     rating: 4.5,
-    duration: '2h 30min',
+    duration: '2h 30min'
   };
 
   const createMockQuery = (
@@ -43,15 +43,15 @@ describe(QueryExecutionService.name, () => {
     id: 'test-query',
     name: 'Test Query',
     apiId,
-    interval: 60000,
     parameters: [{ name: 'test', value: 'value' }],
     selectedAttributes,
-    isActive: true,
+    interval: 60000, // Adding default interval of 1 minute
+    isActive: true  // Adding default isActive state
   });
 
   const createMockApi = (id: string): Api => ({
     id,
-    name: `${id.split('-')[0].toUpperCase()} API`,
+    name: id === 'books-api' ? 'Books API' : 'Movies API',
     description: 'Test API',
     parameters: [
       {
@@ -61,7 +61,7 @@ describe(QueryExecutionService.name, () => {
         required: true,
       },
     ],
-    availableAttributes: ['title', 'author', 'genre'],
+    availableAttributes: ['title', 'author', 'genre', 'rating'],
   });
 
   beforeEach(() => {
@@ -119,6 +119,7 @@ describe(QueryExecutionService.name, () => {
         expect(result.status).toBe('success');
         expect(result.queryId).toBe(query.id);
         expect(result.data).toEqual(mockData);
+        expect(result.timestamp).toBeDefined();
         expect(queryResults.storeResult).toHaveBeenCalledWith(result);
         done();
       });
@@ -136,6 +137,7 @@ describe(QueryExecutionService.name, () => {
         expect(result.status).toBe('success');
         expect(result.queryId).toBe(query.id);
         expect(result.data).toEqual(mockData);
+        expect(result.timestamp).toBeDefined();
         expect(queryResults.storeResult).toHaveBeenCalledWith(result);
         done();
       });
@@ -149,6 +151,7 @@ describe(QueryExecutionService.name, () => {
         expect(result.status).toBe('error');
         expect(result.error).toBe('API not found');
         expect(result.data).toEqual([]);
+        expect(result.timestamp).toBeDefined();
         expect(queryResults.storeResult).toHaveBeenCalledWith(result);
         done();
       });
@@ -168,10 +171,34 @@ describe(QueryExecutionService.name, () => {
         expect(result.status).toBe('error');
         expect(result.error).toBe(errorMessage);
         expect(result.data).toEqual([]);
+        expect(result.timestamp).toBeDefined();
         expect(queryResults.storeResult).toHaveBeenCalledWith(result);
         done();
       });
     });
+
+    it('should handle API repository errors', (done) => {
+      const query = createMockQuery('books-api');
+      const errorMessage = 'API Repository error';
+
+      apiRepository.getApiById.mockReturnValue(
+        throwError(() => new Error(errorMessage))
+      );
+
+      service.executeQuery(query).subscribe({
+        next: (result) => {
+          expect(result.status).toBe('error');
+          expect(result.error).toBe(errorMessage);
+          expect(result.data).toEqual([]);
+          expect(result.timestamp).toBeDefined();
+          expect(queryResults.storeResult).toHaveBeenCalledWith(result);
+          done();
+        },
+        error: () => {
+          done(new Error('Should not reach error callback, error should be handled in the service'));
+        }
+      });
+    }, 10000); // Increase timeout to 10 seconds
 
     it('should filter results by selected attributes', (done) => {
       const query = createMockQuery('books-api', ['title', 'author']);
@@ -189,6 +216,23 @@ describe(QueryExecutionService.name, () => {
             author: mockBook.author,
           },
         ]);
+        expect(result.timestamp).toBeDefined();
+        done();
+      });
+    });
+
+    it('should handle non-existent selected attributes', (done) => {
+      const query = createMockQuery('books-api', ['nonexistent']);
+      const mockApi = createMockApi('books-api');
+      const mockData = [mockBook];
+
+      apiRepository.getApiById.mockReturnValue(of(mockApi));
+      booksService.queryBooks.mockReturnValue(of(mockData));
+
+      service.executeQuery(query).subscribe((result) => {
+        expect(result.status).toBe('success');
+        expect(result.data).toEqual([{ nonexistent: undefined }]);
+        expect(result.timestamp).toBeDefined();
         done();
       });
     });
@@ -209,6 +253,24 @@ describe(QueryExecutionService.name, () => {
           author: 'Test Author',
           genre: 'Test Genre',
         });
+        done();
+      });
+    });
+
+    it('should handle unknown API type', (done) => {
+      const query = createMockQuery('unknown-api');
+      const mockApi = {
+        ...createMockApi('unknown-api'),
+        name: 'Unknown API',
+      };
+
+      apiRepository.getApiById.mockReturnValue(of(mockApi));
+
+      service.executeQuery(query).subscribe((result) => {
+        expect(result.status).toBe('success');
+        expect(result.data).toEqual([]);
+        expect(result.timestamp).toBeDefined();
+        expect(queryResults.storeResult).toHaveBeenCalledWith(result);
         done();
       });
     });
